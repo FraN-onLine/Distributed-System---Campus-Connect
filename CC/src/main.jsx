@@ -1,8 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import Landingpage from '../pages/Landingpage/Landingpage.jsx'
 import Routes from '../Router/Routes.jsx'
-import { BrowserRouter, Router } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
+import './Css/theme.css'
 
 
 

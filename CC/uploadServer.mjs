@@ -6,17 +6,23 @@ import cors from 'cors';
 import mysql from 'mysql2/promise';
 import bodyParser from 'body-parser';
 
+const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_USER = process.env.DB_USER || 'root';
+const DB_PASS = process.env.DB_PASS || '1234';
+const DB_NAME = process.env.DB_NAME || 'ccisconnectusers';
+const UPLOAD_PORT = Number(process.env.UPLOAD_PORT || 3090);
+
 const app = express();
-const port = 3090;
+const port = UPLOAD_PORT;
 
 app.use(cors());
 app.use(bodyParser.json());
 
 const db = await mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'ccisconnectusers'
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASS,
+  database: DB_NAME
 });
 
 const __dirname = path.resolve();

@@ -5,6 +5,7 @@ import Recentchatcontainer from "../../Component/Recentchatcontainer";
 import { io } from 'socket.io-client';
 import '../../../src/Css/Mainpage/Chatsection/Chatlist.css';
 import Chatbox from './Chatbox';
+import { PHP_BASE_URL, SOCKET_SERVER_URL } from '../../../src/config/api';
 
 
 const DEFAULT_ROOM = "Dev Circle";
@@ -33,7 +34,7 @@ useEffect(() => {
         return;
       }
 
-      const res = await fetch('http://localhost/CCIS_CONNECT-MASTER/src/php/get_username.php', { credentials: 'include' });
+      const res = await fetch(`${PHP_BASE_URL}/get_username.php`, { credentials: 'include' });
       const data = await res.json();
       if (data.username) {
         setUsername(data.username);
@@ -59,7 +60,7 @@ useEffect(() => {
 
   // Socket setup
   useEffect(() => {
-    const newSocket = io('http://localhost:3000');
+    const newSocket = io(SOCKET_SERVER_URL);
     setSocket(newSocket);
     return () => newSocket.disconnect();
   }, []);
@@ -197,13 +198,13 @@ useEffect(() => {
       </div>
       {Dropdown && (
         <div className="Chatlist-recent-section">
-          <div style={{ padding: '0 1em', marginBottom: '1em' }}>
+          <div className="create-room-form">
             <input
               type="text"
               value={newRoom}
               onChange={(e) => setNewRoom(e.target.value)}
               placeholder="New room name"
-              style={{ width: '100%', borderRadius: '8px', padding: '0.3em' }}
+              className="create-room-input"
             />
             <div className="createroom-container">
               <button 
@@ -213,7 +214,7 @@ useEffect(() => {
            
           </div>
           <div className="chat-list-container">
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            <ul className="chat-room-list">
               {roomList.map((r) => (
                 <li 
                   className={`chat-list-item${r === room ? ' selected' : ''}`}
