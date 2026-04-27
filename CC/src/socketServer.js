@@ -1,17 +1,24 @@
 import { Server } from 'socket.io';
 import mysql from 'mysql2/promise';
 
+const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_USER = process.env.DB_USER || 'root';
+const DB_PASS = process.env.DB_PASS || '1234';
+const DB_NAME = process.env.DB_NAME || 'ccisconnectusers';
+const SOCKET_PORT = Number(process.env.SOCKET_PORT || 3000);
+const SOCKET_CORS_ORIGIN = process.env.SOCKET_CORS_ORIGIN || 'http://localhost:5173';
+
 // Create a connection to the database
 const db = await mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // Replace 
-  password: 'root', // Replace 
-  database: 'ccisconnectusers',
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASS,
+  database: DB_NAME,
 });
 
 const io = new Server({
   cors: {
-    origin: "http://localhost:5173",
+    origin: SOCKET_CORS_ORIGIN,
     methods: ["GET", "POST"],
   },
 });
@@ -93,5 +100,5 @@ socket.on('change_username', async ({ userId, newUsername }) => {
   
 });
 
-io.listen(3000);
-console.log('Socket.IO server running on http://localhost:3000');
+io.listen(SOCKET_PORT);
+console.log(`Socket.IO server running on http://localhost:${SOCKET_PORT}`);

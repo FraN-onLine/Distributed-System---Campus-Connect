@@ -1,11 +1,33 @@
-*{
-    margin: 0;
-    padding: 0;
+.Main-content {
+  display: flex;
+  gap: 0.9rem;
+  align-items: stretch;
+  width: 100%;
+  min-height: 100vh;
+  padding: 0.95rem;
+  background: transparent;
 }
-.Main-content{
-    display: flex;
-    flex-direction: row;
-    width: 100vw;
-    height: 100vh;
-    background-color: #ffffff;
+
+.Main-content > * {
+  min-width: 0;
+}
+
+.Main-chat-panels {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+@media screen and (max-width: 768px) {
+  .Main-content {
+    gap: 0;
+    padding: 0;
+    min-height: calc(100vh - 1px);
+  }
+
+  .Main-chat-panels {
+    gap: 0;
+  }
 }

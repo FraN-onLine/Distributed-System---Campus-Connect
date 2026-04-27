@@ -1,0 +1,43 @@
+:root {
+  --brand-blue: #04045e;
+  --brand-gold: #ff9e01;
+  --surface: #ffffff;
+  --surface-soft: #f6f7fb;
+  --surface-muted: #eef1f8;
+  --text-primary: #10162f;
+  --text-muted: #4e5672;
+  --border-soft: #d9dff0;
+  --shadow-soft: 0 10px 28px rgba(6, 16, 38, 0.08);
+  --shadow-strong: 0 20px 46px rgba(6, 16, 38, 0.14);
+  --radius-md: 14px;
+  --radius-lg: 22px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text-primary);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 158, 1, 0.12), transparent 28%),
+    radial-gradient(circle at 100% 100%, rgba(4, 4, 94, 0.08), transparent 32%),
+    linear-gradient(135deg, #f7f8fc 0%, #f1f4fb 100%);
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+img {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}

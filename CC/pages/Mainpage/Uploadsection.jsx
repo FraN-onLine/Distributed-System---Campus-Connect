@@ -24,7 +24,7 @@ function Uploadsection(){
         <>
          <div className="Main-content">
            <Sidebar />
-           <div className="Uploadsection-maincontent">
+           <div className="Main-chat-panels Uploadsection-maincontent">
              <UploadArea username={username} userId={userId} />
            </div>
            </div>

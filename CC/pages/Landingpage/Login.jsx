@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import '../../src/Css/Landingpage-inputCredentials.css';
 import { useNavigate } from 'react-router-dom';
+import { PHP_BASE_URL } from '../../src/config/api';
 
 function Login({ closeLogin, showlogin, showsignup }) {
     const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ function Login({ closeLogin, showlogin, showsignup }) {
         formData.append('password', password);
 
         try {
-            const response = await fetch('http://localhost/CCIS_CONNECT-MASTER/src/php/login.php', {
+            const response = await fetch(`${PHP_BASE_URL}/login.php`, {
                 method: 'POST',
                 body: formData
             });

@@ -1,34 +1,32 @@
-.filecontainer-content{
-    background-color: transparent;
-    width: 100%;
-    height: 70%;
-    margin-bottom: 1em;
-    display: flex;
-    justify-content: space-between;
-    box-sizing: border-box;
-    padding: 0.3em;
-    flex-wrap: wrap;
-    border: 1px solid black;
-    border-radius: 10px;
-    align-items: center;
+.filecontainer-content {
+  width: 100%;
+  min-height: 58px;
+  margin-bottom: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #d8e0f3;
+  border-radius: 12px;
+  background: #fff;
 }
+
 .filecontainer-name {
-    width: 85%;
-    height: 100%;
-    display: block;           /* Change from flex to block */
-    font-size: 80%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    background-color: transparent;
-    word-break: break-all;    /* Allow long words to wrap */
-    overflow-wrap: break-word;/* Also helps with wrapping */
+  width: 80%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
-.filecontainer-size{
-    width: 15%;
-    height: auto;
-    font-size: 0.6em;
+
+.filecontainer-name a {
+  color: #263466;
+  text-decoration: underline;
+  font-size: 0.9rem;
 }
-a{
-    color: black;
+
+.filecontainer-size {
+  width: 20%;
+  text-align: right;
+  color: #607099;
+  font-size: 0.75rem;
 }
