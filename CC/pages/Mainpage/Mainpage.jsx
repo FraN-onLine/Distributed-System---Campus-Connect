@@ -35,25 +35,28 @@ function Mainpage() {
 
   return (
     <div className="Main-content">
-      <Sidebar />
-      {/* ... */}
-      <Chatlist
-        username={username}
-        setUsername={setUsername}
-        room={room}
-        setRoom={setRoom}
-        userId={userId}
-        setUserId={setUserId}
-        openChat={openChat}
-        setOpenChat={setOpenChat}
-      />
-      <Chatbox
-        username={username}
-        room={room}
-        userId={userId}
-        openChat={openChat}
-        setOpenChat={setOpenChat}
-      />
+      {(!isMobile || !openChat) && <Sidebar />}
+      <div className="Main-chat-panels">
+        {(!isMobile || !openChat) && (
+          <Chatlist
+            username={username}
+            setUsername={setUsername}
+            room={room}
+            setRoom={setRoom}
+            userId={userId}
+            setUserId={setUserId}
+            openChat={openChat}
+            setOpenChat={setOpenChat}
+          />
+        )}
+        <Chatbox
+          username={username}
+          room={room}
+          userId={userId}
+          openChat={openChat}
+          setOpenChat={setOpenChat}
+        />
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState , useEffect } from 'react';
 import '../../src/Css/Landingpage-inputCredentials.css';
+import { PHP_BASE_URL } from '../../src/config/api';
 
 function Signup({ email, closeSignup, loginShow, signupShow }) {
   const [emptyEmail, setEmail] = useState("");
@@ -23,7 +24,7 @@ function Signup({ email, closeSignup, loginShow, signupShow }) {
     const studentId = document.getElementById("student_id-input").value;
     
     try {
-      const response = await fetch("http://localhost/CCIS_CONNECT-MASTER/src/php/signup.php", {
+      const response = await fetch(`${PHP_BASE_URL}/signup.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

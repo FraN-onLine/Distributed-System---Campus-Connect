@@ -2,135 +2,106 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: fit-content;
-  background-color: transparent;
   font-family: "Jersey 20", "Poppins", sans-serif;
 }
 
-.design-1{
-  color: #FF9E01;
+.design-1 {
+  color: var(--brand-gold);
 }
+
 .about-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
   width: 100%;
-  height: auto;
-  background-color: #04045E;
-  color: #FF9E01;
-  box-sizing: border-box;
-  padding: 1em 2em;
-  border-top: 5px solid #FF9E01;
-  border-bottom: 5px solid #FF9E01;
+  padding: clamp(1rem, 2.5vw, 1.8rem) clamp(1rem, 4vw, 3rem);
+  background: linear-gradient(165deg, #03034a 0%, #05056f 100%);
+  color: #fff;
+  border-top: 4px solid var(--brand-gold);
+  border-bottom: 4px solid var(--brand-gold);
+  text-align: center;
 }
 
 .about-header h3 {
-  font-size: clamp(2em , 5vw ,10em);
+  margin: 0;
+  font-size: clamp(1.6rem, 5vw, 3rem);
+  color: var(--brand-gold);
 }
 
 .about-header p {
-  font-size: clamp(1em, 2vw, 2.5em);
-  padding: 1em 5em;
-  text-align: center;
+  width: min(1000px, 100%);
+  margin: 0.9rem auto 0;
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  line-height: 1.36;
+  color: #eef1ff;
 }
 
-.about-card-container {
-  background-color: #FF9E01;
-  width: 25em;
-  padding: 2em;
-  min-width: 250px;
-  min-height: 250px;
-  border-radius: 15px;
-  border: 1px solid #04045E;
-  color: #04045E;
-}
-
-.about-card-container p {
-  font-size: clamp(1em, 2vw, 2.5em);
-  text-align: justify;
-}
-
-.about-card-container h4 {
-  font-size: 3.5em;
-  margin: 0.2em 0;
-}
-
-.about-layout-card-right {
-  background-color: transparent;
+.about-body {
   display: flex;
-  box-sizing: border-box;
-  padding: 2em 5em;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.2rem 0;
+}
+
+.about-layout-card-right,
+.about-layout-card-left {
+  display: flex;
+  width: 100%;
+  padding: 0.4rem clamp(1rem, 6vw, 5rem);
 }
 
 .about-layout-card-left {
-  background-color: transparent;
-  display: flex;
   justify-content: flex-end;
-  box-sizing: border-box;
-  padding: 2em 5em;
 }
-.about-layout-card-left p{
-  text-align: center;
-  margin-top: 1em;
-  justify-content: center;
-  align-items: center;
+
+.about-card-container {
+  width: min(560px, 100%);
+  min-height: 205px;
+  padding: 1.2rem 1.3rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid #e4c07d;
+  background:
+    linear-gradient(145deg, rgba(255, 197, 93, 0.18), rgba(255, 158, 1, 0.22)),
+    #ffffff;
+  box-shadow: var(--shadow-soft);
+  color: var(--brand-blue);
 }
-.about-layout-card-right p{
-  text-align: center;
-  margin-top: 1em;
-  justify-content: center;
-  align-items: center;
+
+.about-card-container h4 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4.4vw, 2.5rem);
+}
+
+.about-card-container p {
+  margin: 0.75rem 0 0;
+  font-size: clamp(0.98rem, 2.4vw, 1.28rem);
+  line-height: 1.35;
+  color: #263156;
+  text-align: left;
 }
 
 .about-footer {
-  display: flex; 
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: auto;
-  background-color: #04045E;
-  color: #FF9E01;
-  box-sizing: border-box;
-  padding: 1em;
-  margin: 5em 0 3em 0;
-  border-top: 5px solid #FF9E01;
-  border-bottom: 5px solid #FF9E01;
-}
-
-.about-footer p {
-  font-size: clamp(1em, 2vw, 2.5em);
-  padding: 0.8em 4em;
+  margin: 1.4rem 0 2.2rem;
+  padding: 1rem;
+  border-top: 4px solid var(--brand-gold);
+  border-bottom: 4px solid var(--brand-gold);
+  background: linear-gradient(165deg, #05056f 0%, #03034a 100%);
+  color: #f7f8ff;
   text-align: center;
 }
 
-@media screen and (max-width:505px) {
-  .about-header p {
-    font-size: clamp(1em, 2vw, 2.5em);
-    padding: 1em 0.2em;
-    text-align: center;
-  }
+.about-footer p {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  padding: 0 0.6rem;
+  font-size: clamp(1rem, 2.3vw, 1.45rem);
 }
-@media screen and (max-width:475px) {
+
+@media screen and (max-width: 760px) {
+  .about-layout-card-left,
+  .about-layout-card-right {
+    justify-content: center;
+    padding: 0.4rem 0.9rem;
+  }
+
   .about-card-container {
-    background-color: #FF9E01;
-    width: 25em;
-    padding: 2em;
-    min-width: 50px;
-    min-height: 20px;
-    border-radius: 15px;
-    border: 1px solid #04045E;
-    color: #04045E;
+    border-radius: 16px;
   }
-
-
-  .about-card-container h4 {
-    font-size: clamp(1.4em , 5vw ,10em);
-    margin: 0.2em 0;
-  }
-  .about-card-container p{
-    font-size: clamp(0.7em, 2vw, 2.5em);
-  }
-
 }

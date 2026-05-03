@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import '../../../src/Css/Mainpage/Chatsection/Chatbox.css';
 import { IoMdSend } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
+import { SOCKET_SERVER_URL } from '../../../src/config/api';
 
 function Chatbox({ username, room, userId, openChat, setOpenChat}) {
   const [message, setMessage] = useState('');
@@ -28,7 +29,7 @@ function Chatbox({ username, room, userId, openChat, setOpenChat}) {
 
   // Connect socket on mount
   useEffect(() => {
-    const newSocket = io('http://localhost:3000');
+    const newSocket = io(SOCKET_SERVER_URL);
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();

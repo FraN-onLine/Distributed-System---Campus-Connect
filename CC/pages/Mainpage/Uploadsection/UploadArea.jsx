@@ -4,6 +4,7 @@ import { IoIosAdd } from "react-icons/io";
 import { IoMdClose } from "react-icons/io";
 import Filecontainer from '../../Component/Filecontainer'
 import { CiSearch } from "react-icons/ci";
+import { UPLOAD_SERVER_URL } from '../../../src/config/api';
 
 
 /**
@@ -49,7 +50,7 @@ function UploadArea({ username, userId }) {
   // Fetch uploaded files from server
   const fetchUploadedFiles = async () => {
     try {
-      const res = await fetch('http://localhost:3090/list-uploads');
+      const res = await fetch(`${UPLOAD_SERVER_URL}/list-uploads`);
       const data = await res.json();
       setUploadedFiles(data);
     } catch (err) {
@@ -90,7 +91,7 @@ const handleUpload = async (e) => {
   formData.append('user_id', userId);
 
   try {
-    const res = await fetch('http://localhost:3090/uploads', {
+    const res = await fetch(`${UPLOAD_SERVER_URL}/uploads`, {
       method: 'POST',
       body: formData,
     });
@@ -112,7 +113,7 @@ const handleUpload = async (e) => {
 const handleDelete = async (fileId) => {
   if (!window.confirm('Are you sure you want to delete this file?')) return;
   try {
-    const res = await fetch(`http://localhost:3090/uploads/${fileId}`, {
+    const res = await fetch(`${UPLOAD_SERVER_URL}/uploads/${fileId}`, {
       method: 'DELETE',
     });
     const data = await res.json();
@@ -154,31 +155,20 @@ const handleDelete = async (fileId) => {
               </div>
               <IoIosAdd className='add-button' onClick={() => setUploadModal(true)} />
             </div>
-            <div className="Uploadarea-data-area" style={{
-              maxHeight: '500px',
-              overflowY: 'auto',
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '10px',
-              padding: '10px'
-            }}>
+            <div className="Uploadarea-data-area">
               {filteredFiles.map(file => (
-                <div className='uploaded-file-container' key={file.id} style={{ }}>
-                  <div title={file.title} style={{ fontWeight: 'bold', marginBottom: '4px', textAlign: "center", color: '#333' }}>
+                <div className='uploaded-file-container' key={file.id}>
+                  <div title={file.title} className='uploaded-file-title'>
                     {file.title}
                   </div>
-                  <div style={{ fontSize: '0.9em', color: '#555', marginBottom: '4px', textAlign: "center" }}>
+                  <div className='uploaded-file-meta'>
                     Uploaded by: <b>{file.username}</b>
                   </div>
                   <a
-                    href={`http://localhost:3090/uploads/${encodeURIComponent(file.filename)}`}
+                    href={`${UPLOAD_SERVER_URL}/uploads/${encodeURIComponent(file.filename)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{
-                      fontSize: '0.85em',
-                      color: '#1976d2',
-                      textDecoration: 'underline'
-                    }}
+                    className='download-link'
                   >
                     Download
                   </a>
@@ -220,8 +210,8 @@ const handleDelete = async (fileId) => {
              <div className="Files"  style={{display: files.length > 0 ? 'flex' : 'none',flexDirection: 'column'}}>
                  {files.map(file => <Filecontainer key={file.name + file.size} name={file.name} size={file.size} url={URL.createObjectURL(file)}/>)}
              </div>
-             {uploadError && <div style={{color: 'red'}}>{uploadError}</div>}
-             {uploadSuccess && <div style={{color: 'green'}}>{uploadSuccess}</div>}
+             {uploadError && <div className='upload-feedback upload-error'>{uploadError}</div>}
+             {uploadSuccess && <div className='upload-feedback upload-success'>{uploadSuccess}</div>}
              
              <div className="uploadButton-container">
                   <button className="upload-button" type="submit" disabled={uploading}>

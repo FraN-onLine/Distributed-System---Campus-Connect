@@ -5,15 +5,17 @@ import { IoMdSettings } from "react-icons/io";
 import { CiLogout } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { PHP_BASE_URL } from '../../src/config/api';
 
 
 function Sidebar(){
      const useNav = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
     
         const handleLogout = async () => {
           try {
-            const response = await fetch('http://localhost/CCIS_CONNECT-MASTER/src/php/logout.php', {
+            const response = await fetch(`${PHP_BASE_URL}/logout.php`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -26,6 +28,7 @@ function Sidebar(){
             localStorage.removeItem('currentroom');
             // Notify other tabs
             localStorage.setItem('logout', Date.now());
+            setIsOpen(false);
             useNav('/');
         } else {
             console.error('Logout failed');
@@ -47,9 +50,22 @@ function Sidebar(){
 
     return(
     <>
+      <button
+        className="sidebar-fab"
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-label="Toggle sidebar"
+      >
+        ☰
+      </button>
+
+      <div
+        className={`sidebar-overlay${isOpen ? ' show' : ''}`}
+        onClick={() => setIsOpen(false)}
+      />
 
      {/*Aside start*/ }
-      <aside>
+      <aside className={`app-sidebar${isOpen ? ' open' : ''}`}>
         <div className="nav-header-logo">
           <img src={Ccislogo} alt="ccislogo" />
         </div>
@@ -58,7 +74,7 @@ function Sidebar(){
 
     
          <ul className="nav-list">
-              <li className="nav-item" onClick={() => useNav('/Mainpage')}>
+              <li className="nav-item" onClick={() => { useNav('/Mainpage'); setIsOpen(false); }}>
                <a href="Mainpage" className="nav-link">
                   <FaMessage className='nav-icon'/> 
                   
@@ -68,7 +84,7 @@ function Sidebar(){
              </li>
 
 
-              <li className="nav-item" onClick={() => useNav('/Upload')}>
+          <li className="nav-item" onClick={() => { useNav('/Upload'); setIsOpen(false); }}>
                <a href="#" className="nav-link">
                   <FaUpload className='nav-icon'/>
                </a>
