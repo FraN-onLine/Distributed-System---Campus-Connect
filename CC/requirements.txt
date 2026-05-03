@@ -1,6 +1,5 @@
-fastapi
-uvicorn[standard]
-python-socketio[asyncio]
-aiomysql
-aiofiles
-python-multipart
+Flask
+Flask-Cors
+uvicorn
+python-socketio
+pymysql

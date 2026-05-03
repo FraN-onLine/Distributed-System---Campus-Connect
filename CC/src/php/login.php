@@ -3,19 +3,25 @@
 <?php
 session_start();
 
-header("Access-Control-Allow-Origin: http://localhost:5173"); // Allow requests from any origin, bale para mafetch to ni jsx
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
 // handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-  http_response_code(204); # what it means is that the request is OK and the server is ready to handle it
-  exit;
+    header("Access-Control-Allow-Origin: http://localhost:5173");
+    header("Access-Control-Allow-Credentials: true");
+    header("Access-Control-Allow-Methods: POST, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type");
+    http_response_code(204);
+    exit;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST["email"];
-    $password = $_POST["password"];
+    $data = json_decode(file_get_contents("php://input"), true);
+    $email = $data["email"];
+    $password = $data["password"];
 
     $stmt = $conn->prepare("SELECT id, password, username FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);

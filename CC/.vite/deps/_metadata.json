@@ -1,82 +1,8 @@
 {
-  "hash": "238a5779",
-  "configHash": "5a08dccd",
-  "lockfileHash": "b47ce382",
-  "browserHash": "67ae1ceb",
-  "optimized": {
-    "react": {
-      "src": "../../node_modules/react/index.js",
-      "file": "react.js",
-      "fileHash": "cf3aa418",
-      "needsInterop": true
-    },
-    "react-dom/client": {
-      "src": "../../node_modules/react-dom/client.js",
-      "file": "react-dom_client.js",
-      "fileHash": "a209ac33",
-      "needsInterop": true
-    },
-    "react-router-dom": {
-      "src": "../../node_modules/react-router-dom/dist/index.mjs",
-      "file": "react-router-dom.js",
-      "fileHash": "c4fcdafd",
-      "needsInterop": false
-    },
-    "react-icons/io5": {
-      "src": "../../node_modules/react-icons/io5/index.mjs",
-      "file": "react-icons_io5.js",
-      "fileHash": "46321a07",
-      "needsInterop": false
-    },
-    "react-icons/md": {
-      "src": "../../node_modules/react-icons/md/index.mjs",
-      "file": "react-icons_md.js",
-      "fileHash": "347703a4",
-      "needsInterop": false
-    },
-    "react-icons/io": {
-      "src": "../../node_modules/react-icons/io/index.mjs",
-      "file": "react-icons_io.js",
-      "fileHash": "8479288c",
-      "needsInterop": false
-    },
-    "react-icons/fa6": {
-      "src": "../../node_modules/react-icons/fa6/index.mjs",
-      "file": "react-icons_fa6.js",
-      "fileHash": "5ee3eefe",
-      "needsInterop": false
-    },
-    "react-icons/ci": {
-      "src": "../../node_modules/react-icons/ci/index.mjs",
-      "file": "react-icons_ci.js",
-      "fileHash": "dc7db6b7",
-      "needsInterop": false
-    },
-    "socket.io-client": {
-      "src": "../../node_modules/socket.io-client/build/esm/index.js",
-      "file": "socket__io-client.js",
-      "fileHash": "5913eed7",
-      "needsInterop": false
-    },
-    "react-icons/fa": {
-      "src": "../../node_modules/react-icons/fa/index.mjs",
-      "file": "react-icons_fa.js",
-      "fileHash": "dfcce12b",
-      "needsInterop": false
-    }
-  },
-  "chunks": {
-    "chunk-GQIAEJ4M": {
-      "file": "chunk-GQIAEJ4M.js"
-    },
-    "chunk-5HNGYYSW": {
-      "file": "chunk-5HNGYYSW.js"
-    },
-    "chunk-TVFQMRVC": {
-      "file": "chunk-TVFQMRVC.js"
-    },
-    "chunk-G3PMV62Z": {
-      "file": "chunk-G3PMV62Z.js"
-    }
-  }
+  "hash": "56833ffb",
+  "configHash": "2089d840",
+  "lockfileHash": "dc2346f1",
+  "browserHash": "abf46882",
+  "optimized": {},
+  "chunks": {}
 }

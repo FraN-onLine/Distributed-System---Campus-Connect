@@ -1,8 +1,10 @@
 import os
 from datetime import datetime
 
-import aiomysql
+import pymysql
 import socketio
+from pymysql.cursors import DictCursor
+from starlette.concurrency import run_in_threadpool
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_CONFIG = {
@@ -11,33 +13,45 @@ DB_CONFIG = {
     'password': 'root',
     'db': 'ccisconnectusers',
     'autocommit': True,
+    'charset': 'utf8mb4',
 }
 
-sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins=['http://localhost:5173'])
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins=[
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost',
+        'http://127.0.0.1',
+    ],
+)
 app = socketio.ASGIApp(sio)
-_db_pool = None
 
 
-async def get_db_pool():
-    global _db_pool
-    if _db_pool is None:
-        _db_pool = await aiomysql.create_pool(**DB_CONFIG)
-    return _db_pool
+def create_db_connection():
+    return pymysql.connect(cursorclass=DictCursor, **DB_CONFIG)
+
+
+def fetch_all_sync(query, params=None):
+    with create_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, params or ())
+            return cur.fetchall()
 
 
 async def fetch_all(query, params=None):
-    pool = await get_db_pool()
-    async with pool.acquire() as conn:
-        async with conn.cursor(aiomysql.DictCursor) as cur:
-            await cur.execute(query, params or ())
-            return await cur.fetchall()
+    return await run_in_threadpool(fetch_all_sync, query, params)
+
+
+def execute_sync(query, params=None):
+    with create_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, params or ())
+            conn.commit()
 
 
 async def execute(query, params=None):
-    pool = await get_db_pool()
-    async with pool.acquire() as conn:
-        async with conn.cursor() as cur:
-            await cur.execute(query, params or ())
+    await run_in_threadpool(execute_sync, query, params)
 
 
 @sio.event

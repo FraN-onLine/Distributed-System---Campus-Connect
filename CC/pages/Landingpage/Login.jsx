@@ -19,7 +19,11 @@ function Login({ closeLogin, showlogin, showsignup }) {
         try {
             const response = await fetch(`${PHP_BASE_URL}/login.php`, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ email, password })
             });
 
             const result = await response.json();

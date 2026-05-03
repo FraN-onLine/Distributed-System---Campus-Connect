@@ -43,18 +43,26 @@ function UploadArea({ username, userId }) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState('');
+  const [fetchError, setFetchError] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [title, setTitle] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch uploaded files from server
   const fetchUploadedFiles = async () => {
+    setFetchError('');
     try {
       const res = await fetch(`${UPLOAD_SERVER_URL}/list-uploads`);
+      if (!res.ok) {
+        const message = await res.text();
+        setFetchError(`Could not load uploads: ${message || res.statusText}`);
+        return;
+      }
       const data = await res.json();
       setUploadedFiles(data);
     } catch (err) {
-      // Optionally handle error
+      console.error('Fetch uploaded files failed:', err);
+      setFetchError(`Could not load uploads: ${err.message}`);
     }
   };
 
@@ -210,6 +218,7 @@ const handleDelete = async (fileId) => {
              <div className="Files"  style={{display: files.length > 0 ? 'flex' : 'none',flexDirection: 'column'}}>
                  {files.map(file => <Filecontainer key={file.name + file.size} name={file.name} size={file.size} url={URL.createObjectURL(file)}/>)}
              </div>
+             {fetchError && <div className='upload-feedback upload-error'>{fetchError}</div>}
              {uploadError && <div className='upload-feedback upload-error'>{uploadError}</div>}
              {uploadSuccess && <div className='upload-feedback upload-success'>{uploadSuccess}</div>}
              

@@ -3,72 +3,59 @@ from pathlib import Path
 from uuid import uuid4
 from datetime import datetime
 
-import aiofiles
-import aiomysql
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
+import pymysql
+from pymysql.cursors import DictCursor
+from flask import Flask, request, jsonify, send_from_directory, abort
+from flask_cors import CORS
 
 BASE_DIR = Path(__file__).resolve().parent
 UPLOAD_DIR = BASE_DIR / 'uploads'
 UPLOAD_DIR.mkdir(exist_ok=True)
 
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        'http://localhost:5173',
-        'http://localhost',
-        'http://127.0.0.1:5173',
-    ],
-    allow_methods=['*'],
-    allow_headers=['*'],
-)
+app = Flask(__name__)
+CORS(app, supports_credentials=True, origins=[
+    'http://localhost:5173',
+    'http://localhost',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1',
+])
 
-_db_pool = None
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
     'password': 'root',
     'db': 'ccisconnectusers',
     'autocommit': True,
+    'charset': 'utf8mb4',
 }
 
 
-async def get_db_pool():
-    global _db_pool
-    if _db_pool is None:
-        _db_pool = await aiomysql.create_pool(**DB_CONFIG)
-    return _db_pool
+def create_db_connection():
+    return pymysql.connect(cursorclass=DictCursor, **DB_CONFIG)
 
 
-async def fetch_all(query, params=None):
-    pool = await get_db_pool()
-    async with pool.acquire() as conn:
-        async with conn.cursor(aiomysql.DictCursor) as cur:
-            await cur.execute(query, params or ())
-            return await cur.fetchall()
+def fetch_all(query, params=None):
+    with create_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, params or ())
+            return cur.fetchall()
 
 
-async def execute(query, params=None):
-    pool = await get_db_pool()
-    async with pool.acquire() as conn:
-        async with conn.cursor() as cur:
-            await cur.execute(query, params or ())
+def execute(query, params=None):
+    with create_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, params or ())
+            conn.commit()
 
 
-app.mount('/uploads', StaticFiles(directory=str(UPLOAD_DIR)), name='uploads')
+@app.route('/')
+def root():
+    return jsonify({'message': 'Hello from Python upload server'})
 
 
-@app.get('/')
-async def root():
-    return {'message': 'Hello from Python upload server'}
-
-
-@app.get('/list-uploads')
-async def list_uploads():
-    uploads = await fetch_all(
+@app.route('/list-uploads', methods=['GET'])
+def list_uploads():
+    uploads = fetch_all(
         '''
         SELECT f.id, f.filename, f.originalname, f.title, f.uploaded_at, u.username
         FROM uploaded_files f
@@ -76,20 +63,25 @@ async def list_uploads():
         ORDER BY f.uploaded_at DESC
         '''
     )
-    return uploads
+    return jsonify(uploads)
 
 
-@app.post('/uploads')
-async def upload_files(
-    title: str = Form(...),
-    user_id: int = Form(...),
-    files: list[UploadFile] = File(...)
-):
+@app.route('/uploads', methods=['POST'])
+def upload_files():
+    title = request.form.get('title', '').strip()
+    user_id = request.form.get('user_id', '').strip()
+    files = request.files.getlist('files')
+
     if not files:
-        raise HTTPException(status_code=400, detail='No files uploaded')
+        return jsonify({'error': 'No files uploaded'}), 400
 
     if not title:
-        raise HTTPException(status_code=400, detail='Missing title')
+        return jsonify({'error': 'Missing title'}), 400
+
+    try:
+        user_id = int(user_id)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'Invalid user_id'}), 400
 
     for upload_file in files:
         original_name = upload_file.filename
@@ -97,34 +89,38 @@ async def upload_files(
         generated_name = f"{int(datetime.utcnow().timestamp() * 1000)}-{uuid4().hex}{suffix}"
         file_path = UPLOAD_DIR / generated_name
 
-        content = await upload_file.read()
-        async with aiofiles.open(file_path, 'wb') as out_file:
-            await out_file.write(content)
+        upload_file.save(file_path)
 
-        await execute(
+        execute(
             'INSERT INTO uploaded_files (filename, originalname, title, user_id) VALUES (%s, %s, %s, %s)',
             (generated_name, original_name, title, user_id)
         )
 
-    return JSONResponse({'message': 'Files uploaded successfully'})
+    return jsonify({'message': 'Files uploaded successfully'})
 
 
-@app.delete('/uploads/{file_id}')
-async def delete_upload(file_id: int):
-    rows = await fetch_all('SELECT filename FROM uploaded_files WHERE id = %s', (file_id,))
+@app.route('/uploads/<int:file_id>', methods=['DELETE'])
+def delete_upload(file_id):
+    rows = fetch_all('SELECT filename FROM uploaded_files WHERE id = %s', (file_id,))
     if not rows:
-        raise HTTPException(status_code=404, detail='File not found')
+        return jsonify({'error': 'File not found'}), 404
 
     filename = rows[0]['filename']
     file_path = UPLOAD_DIR / filename
     if file_path.exists():
         file_path.unlink()
 
-    await execute('DELETE FROM uploaded_files WHERE id = %s', (file_id,))
-    return JSONResponse({'message': 'File deleted'})
+    execute('DELETE FROM uploaded_files WHERE id = %s', (file_id,))
+    return jsonify({'message': 'File deleted'})
+
+
+@app.route('/uploads/<path:filename>', methods=['GET'])
+def serve_upload(filename):
+    target_path = UPLOAD_DIR / filename
+    if not target_path.exists() or not target_path.is_file():
+        abort(404)
+    return send_from_directory(str(UPLOAD_DIR), filename, as_attachment=True)
 
 
 if __name__ == '__main__':
-    import uvicorn
-
-    uvicorn.run('upload_server:app', host='0.0.0.0', port=3090)
+    app.run(host='0.0.0.0', port=3090)
