@@ -1,40 +1,28 @@
 import { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
+import { socket } from '../../../src/socket';
 import '../../../src/Css/Mainpage/Chatsection/Chatbox.css';
 import { IoMdSend } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
-import { SOCKET_SERVER_URL } from '../../../src/config/api';
 
 function Chatbox({ username, room, userId, openChat, setOpenChat}) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
-  username = localStorage.getItem('username');
-  userId = localStorage.getItem('userId');
-  room = localStorage.getItem('currentroom') || 'Dev Circle';
+  const currentUsername = username || localStorage.getItem('username') || 'Anonymous';
+  const currentUserId = userId || localStorage.getItem('userId');
+  const currentRoom = room || localStorage.getItem('currentroom') || 'Dev Circle';
   const mobile = window.innerWidth <= 768;
   const [isVisible, setIsVisible] = useState(window.innerWidth > 768);
-  const [openChatbox, setOpenChatbox] = useState(false);
   const messagesEndRef = useRef(null);
   
   useEffect(() => {
-  if (openChat) setAnimation('slide-in');
-}, [openChat]);
+    if (openChat) setAnimation('slide-in');
+  }, [openChat]);
 
    useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
-
-  // Connect socket on mount
-  useEffect(() => {
-    const newSocket = io(SOCKET_SERVER_URL);
-    setSocket(newSocket);
-    return () => {
-      newSocket.disconnect();
-    };
-  }, []);
 
  useEffect(() => {
     const handleResize = () => {
@@ -65,11 +53,11 @@ function Chatbox({ username, room, userId, openChat, setOpenChat}) {
 
   // Join room and set up listeners
   useEffect(() => {
-    if (!socket || !room ) return;
+    if (!socket || !currentRoom) return;
 
     setMessages([]);
     
-    socket.emit('join_room', room);
+    socket.emit('join_room', currentRoom);
 
     const handleLoadMessages = (loadedMessages) => setMessages(loadedMessages);
     const handleReceiveMessage = (data) => setMessages((prev) => [...prev, data]);
@@ -81,7 +69,7 @@ function Chatbox({ username, room, userId, openChat, setOpenChat}) {
       socket.off('load_messages', handleLoadMessages);
       socket.off('receive_message', handleReceiveMessage);
     };
-  }, [socket, room]);
+  }, [currentRoom]);
 
   //const handleMobileVisibility = () => {
   //  if(mobile) {
@@ -97,27 +85,19 @@ function Chatbox({ username, room, userId, openChat, setOpenChat}) {
   const sendMessage = () => {
     if (message.trim() !== '' && socket) {
       const messageData = {
-        username: username || 'Anonymous',
+        username: currentUsername,
         content: message,
         timestamp: new Date().toISOString(),
-        room,
-        userId: userId,
+        room: currentRoom,
+        userId: currentUserId,
       };
       socket.emit('send_message', messageData);
       setMessage('');
     }
   };
 
-  // const handleCreateRoom = () => {
-  //   if (newRoom.trim() !== '' && socket) {
-  //   setRoom(newRoom.trim());
-  //   socket.emit('join_room', newRoom.trim());
-  //   setNewRoom('');
-  // }
-  // };
-     
-     const [animation, setAnimation] = useState('slide-in');
-    const handleClose = () => {
+  const [animation, setAnimation] = useState('slide-in');
+  const handleClose = () => {
     setAnimation('slide-out');
     setTimeout(() => setOpenChat(false), 400); // 400ms matches animation duration
   };
@@ -130,7 +110,7 @@ function Chatbox({ username, room, userId, openChat, setOpenChat}) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div className="Chatbox-header">
         <IoIosArrowBack className="back-logo" onClick={handleClose} />
-          <p><b>Group Chat - {room}</b></p>
+          <p><b>Group Chat - {currentRoom}</b></p>
         </div>
 
         <div className="Chatbox-body">

@@ -54,12 +54,23 @@ async def execute(query, params=None):
     await run_in_threadpool(execute_sync, query, params)
 
 
+def serialize_messages(rows):
+    messages = []
+    for row in rows:
+        msg = dict(row)
+        timestamp = msg.get('timestamp')
+        if isinstance(timestamp, datetime):
+            msg['timestamp'] = timestamp.isoformat()
+        messages.append(msg)
+    return messages
+
+
 @sio.event
-async def connect(sid, environ):
+async def connect(sid, environ, auth=None):
     print('A user connected:', sid)
     current_room = 'Dev Circle'
     await sio.save_session(sid, {'room': current_room})
-    sio.enter_room(sid, current_room)
+    await sio.enter_room(sid, current_room)
 
     await execute('INSERT IGNORE INTO rooms (name) VALUES (%s)', (current_room,))
 
@@ -67,7 +78,7 @@ async def connect(sid, environ):
         'SELECT * FROM messages WHERE room = %s ORDER BY timestamp ASC',
         (current_room,)
     )
-    await sio.emit('load_messages', rows, to=sid)
+    await sio.emit('load_messages', serialize_messages(rows), to=sid)
 
     all_rooms = await fetch_all('SELECT name FROM rooms')
     await sio.emit('room_list', [r['name'] for r in all_rooms], to=sid)
@@ -90,7 +101,7 @@ async def join_room(sid, room='Dev Circle'):
         'SELECT * FROM messages WHERE room = %s ORDER BY timestamp ASC',
         (room,)
     )
-    await sio.emit('load_messages', room_rows, to=sid)
+    await sio.emit('load_messages', serialize_messages(room_rows), to=sid)
 
     updated_rooms = await fetch_all('SELECT name FROM rooms')
     await sio.emit('room_list', [r['name'] for r in updated_rooms])

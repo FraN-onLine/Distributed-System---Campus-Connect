@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { FaCircle } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
-import Recentchatcontainer from "../../Component/Recentchatcontainer";
-import { io } from 'socket.io-client';
+import { socket } from '../../../src/socket';
 import '../../../src/Css/Mainpage/Chatsection/Chatlist.css';
-import Chatbox from './Chatbox';
-import { PHP_BASE_URL, SOCKET_SERVER_URL } from '../../../src/config/api';
+import { PHP_BASE_URL } from '../../../src/config/api';
 
 
 const DEFAULT_ROOM = "Dev Circle";
@@ -14,12 +12,10 @@ function Chatlist({ username, setUsername, room, setRoom, userId, setUserId,open
   const [Dropdown, setDropdown] = useState(true);
   const [editing, setEditing] = useState(false);
   const [newUsername, setNewUsername] = useState('');
-  const [socket, setSocket] = useState(null);
   const [error, setError] = useState('');
   //const [room, setRoom] = useState(DEFAULT_ROOM);
   const [newRoom, setNewRoom] = useState('');
   const [roomList, setRoomList] = useState([DEFAULT_ROOM]);
-  room = localStorage.getItem('currentroom') || 'Dev Circle';
   const [isVisible, setIsVisible] = useState(true);
 
   
@@ -58,16 +54,8 @@ useEffect(() => {
     setNewUsername(username);
   }, [username]);
 
-  // Socket setup
-  useEffect(() => {
-    const newSocket = io(SOCKET_SERVER_URL);
-    setSocket(newSocket);
-    return () => newSocket.disconnect();
-  }, []);
-
   // Listen for username change result
   useEffect(() => {
-    if (!socket) return;
     const handler = (result) => {
       if (result.success) {
         setUsername(result.newUsername);
@@ -80,10 +68,9 @@ useEffect(() => {
     };
     socket.on('username_changed', handler);
     return () => socket.off('username_changed', handler);
-  }, [socket, setUsername]);
+  }, [setUsername]);
 
   useEffect(() => {
-    if (!socket) return;
     socket.emit('get_rooms');
     socket.on('room_list', (rooms) => {
       setRoomList(rooms.includes(DEFAULT_ROOM) ? rooms : [DEFAULT_ROOM, ...rooms]);
@@ -91,10 +78,10 @@ useEffect(() => {
     return () => {
       socket.off('room_list');
     };
-  }, [socket]);
+  }, []);
 
   const handleCreateRoom = () => {
-  if (newRoom.trim() !== '' && socket) {
+  if (newRoom.trim() !== '') {
     setRoom(newRoom.trim());
     localStorage.setItem('currentroom', newRoom.trim());
     socket.emit('join_room', newRoom.trim());

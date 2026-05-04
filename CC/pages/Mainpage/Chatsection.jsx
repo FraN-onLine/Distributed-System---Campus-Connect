@@ -6,10 +6,14 @@ import "../../src/Css/Mainpage/Mainchat/Mainchat.css";
 
 function Mainpage() {
   const [username, setUsername] = useState("");
-  const [room, setRoom] = useState("Dev Circle");
+  const [room, setRoom] = useState(() => localStorage.getItem('currentroom') || "Dev Circle");
   const [userId, setUserId] = useState(null);
   const [openChat, setOpenChat] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    localStorage.setItem('currentroom', room);
+  }, [room]);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
